@@ -42,7 +42,41 @@ public class JwtProvider : IJwtProvider
 			);
 
 		// 3) Return Token
-		return (token: new JwtSecurityTokenHandler().WriteToken(token), _options.ExpiryMinutes);
+		return (token: new JwtSecurityTokenHandler().WriteToken(token), _options.ExpiryMinutes * 60);
+
+	}
+
+	// Method Which Implemented Refresh Token
+	public string? ValidateToken(string token)
+	{
+		//1. Take an instance from class JwtSecurityHandlerToken()
+		var tokenHandler = new JwtSecurityTokenHandler();
+
+		//2. Key which used in Encoding to Make Decoding
+		var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Key));
+		
+		//3. Detected if Happened any problem while Encoding
+		try
+		{
+			tokenHandler.ValidateToken(token, new TokenValidationParameters
+			{
+				IssuerSigningKey = symmetricSecurityKey,
+				ValidateIssuerSigningKey = true,
+				ValidateIssuer = false,
+				ValidateAudience = false,
+				ClockSkew = TimeSpan.Zero
+			}, out SecurityToken validatedToken);
+
+			var jwtToken = (JwtSecurityToken) validatedToken;
+
+			return jwtToken.Claims.First(x => x.Type == JwtRegisteredClaimNames.Sub).Value;
+		}
+
+		catch
+		{
+			return null;	
+		}
+
 
 	}
 }

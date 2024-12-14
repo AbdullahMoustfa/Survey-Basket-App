@@ -6,7 +6,7 @@ using System.Reflection.Emit;
 
 namespace SurveyApp.Api.Persistence;
 
-public class ApplicationDbContext : IdentityDbContext<ApplicationUser> 
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 { 
 	public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
 	 : base(options)
