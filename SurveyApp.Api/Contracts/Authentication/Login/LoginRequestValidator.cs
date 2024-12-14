@@ -1,9 +1,9 @@
 ﻿using SurveyApp.Api.Contracts.Polls;
 
-namespace SurveyApp.Api.Contracts.Authentication
+namespace SurveyApp.Api.Contracts.Authentication.Login
 {
-	public class LoginRequestValidator: AbstractValidator<LoginRequest>
-	{
+    public class LoginRequestValidator : AbstractValidator<LoginRequest>
+    {
         public LoginRequestValidator()
         {
             RuleFor(x => x.Email)

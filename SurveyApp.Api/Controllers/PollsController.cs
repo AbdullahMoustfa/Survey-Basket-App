@@ -70,14 +70,14 @@ namespace SurveyApp.Api.Controllers;
 		return NoContent();
 	}
 
-	[HttpPut("{id}/togglePublish")]
-	public async Task<IActionResult> ToggleStatus([FromRoute] int id, CancellationToken cancellationToken)
-	{
-		var isUpdated = await _pollService.TogglePublishStatusAsync(id, cancellationToken);
-
-		if (!isUpdated)
-			return NotFound();
-
-		return NoContent();
-	}
+	//[HttpPut("{id}/togglePublish")]
+	//public async Task<IActionResult> ToggleStatus([FromRoute] int id, CancellationToken cancellationToken)
+	//{
+	//	var isUpdated = await _pollService.TogglePublishStatusAsync(id, cancellationToken);
+	//
+	//	if (!isUpdated)
+	//		return NotFound();
+	//
+	//	return NoContent();
+	//}
 }

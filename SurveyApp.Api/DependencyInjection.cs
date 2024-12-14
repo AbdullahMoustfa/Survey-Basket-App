@@ -18,6 +18,7 @@ namespace SurveyApp.Api
 		public static IServiceCollection AddDependencies(this IServiceCollection services, 
 			IConfiguration configuration)
 		{
+
 			services.AddControllers();
 
 			services.AddAuthConfig(configuration);
