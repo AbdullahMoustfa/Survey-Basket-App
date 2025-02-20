@@ -21,6 +21,18 @@ namespace SurveyApp.Api
 
 			services.AddControllers();
 
+			var allowOrigins = configuration.GetSection("AllowOrigins").Get<string[]>();
+
+			services.AddCors(options =>
+				options.AddDefaultPolicy(builder =>
+					builder
+					.AllowAnyMethod()
+					.AllowAnyHeader()
+					.WithOrigins(allowOrigins!)
+
+				)
+			);
+
 			services.AddAuthConfig(configuration);
 
 			var connectionString = configuration.GetConnectionString("DefaultConnection") ??

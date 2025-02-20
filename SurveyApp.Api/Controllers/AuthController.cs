@@ -1,10 +1,4 @@
-﻿using Microsoft.Extensions.Options;
-using SurveyApp.Api.Authentication;
-using SurveyApp.Api.Contracts.Authentication.Login;
-using SurveyApp.Api.Contracts.Authentication.RefreshToken;
-using SurveyApp.Api.Contracts.Authentication.Register;
-
-namespace SurveyApp.Api.Controllers;
+﻿namespace SurveyApp.Api.Controllers;
 
 
 [Route("[controller]")]
@@ -24,29 +18,34 @@ public class AuthController : ControllerBase
 
 
 
-	[HttpPost]
-	public async Task<ActionResult> LoginAsync(LoginRequest request, CancellationToken cancellationToken)
+	[HttpPost("")]
+	public async Task<IActionResult> LoginAsync([FromBody] LoginRequest request, CancellationToken cancellationToken)
 	{
 		var authResult = await _authService.GetTokenAsync(request.Email, request.Password, cancellationToken);
 
-
-		return authResult is null? BadRequest("Invalid Email/Password!!!"):Ok(authResult);
-	}
+		return authResult.IsSuccess
+			   ? Ok(authResult.Error)
+			   : authResult.ToProblem(StatusCodes.Status400BadRequest);
+    }
 
 	[HttpPost("refresh")]
 	public async Task<IActionResult> RefreshAsync(RefreshTokenRequest request, CancellationToken cancellationToken)
 	{
-		var authResult = await _authService.GetRefreshTokenAsync(request.Token, request.RefreshToken, cancellationToken);
+        var authResult = await _authService.GetRefreshTokenAsync(request.Token, request.RefreshToken, cancellationToken);
 
-		return authResult is null? BadRequest("Invalid Token!!"):Ok(authResult);
-	}
+        return authResult.IsSuccess 
+			? Ok(authResult.Value)
+            : authResult.ToProblem(StatusCodes.Status400BadRequest);
+    }
 
-	[HttpPost("revoke-refresh-token")]
+    [HttpPost("revoke-refresh-token")]
 	public async Task<IActionResult> RevokeRefreshAsync(RefreshTokenRequest request, CancellationToken cancellationToken)
 	{
-		var isRevoked = await _authService.RevokeRefreshTokenAsync(request.Token, request.RefreshToken, cancellationToken);
+		var result = await _authService.RevokeRefreshTokenAsync(request.Token, request.RefreshToken, cancellationToken);
+       
+		return result.IsSuccess 
+			? Ok() 
+			: result.ToProblem(StatusCodes.Status400BadRequest);
 
-		return isRevoked ? Ok() : BadRequest("The operation could not be completed.");
-
-	}
+    }
 }

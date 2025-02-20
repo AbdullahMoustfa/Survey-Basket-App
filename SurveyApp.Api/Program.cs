@@ -1,20 +1,10 @@
-using FluentValidation;
-using FluentValidation.AspNetCore;
-using Mapster;
-using MapsterMapper;
-using Microsoft.EntityFrameworkCore;
 using SurveyApp.Api;
-using SurveyApp.Api.Persistence;
-using SurveyApp.Api.Services;
-using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
-
 
 builder.Services.AddDependencies(builder.Configuration);
 
 var app = builder.Build();
-
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -25,7 +15,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors();
+
 app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapControllers();
