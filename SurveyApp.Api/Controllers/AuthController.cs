@@ -24,7 +24,7 @@ public class AuthController : ControllerBase
 		var authResult = await _authService.GetTokenAsync(request.Email, request.Password, cancellationToken);
 
 		return authResult.IsSuccess
-			   ? Ok(authResult.Error)
+			   ? Ok(authResult.Value)
 			   : authResult.ToProblem(StatusCodes.Status400BadRequest);
     }
 

@@ -10,6 +10,9 @@ namespace SurveyApp.Api.Persistence;
 public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
+    public DbSet<Answer> Answers { get; set; }
+    public DbSet<Poll> Polls { get; set; }
+    public DbSet<Question> Questions { get; set; }
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IHttpContextAccessor httpContextAccessor)
 	 : base(options)
@@ -19,6 +22,14 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
 		modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+		var cascadeFKs = modelBuilder.Model
+			.GetEntityTypes()
+			.SelectMany(t => t.GetForeignKeys())
+			.Where(FK => FK.DeleteBehavior == DeleteBehavior.Cascade && !FK.IsOwnership);
+
+		foreach (var fk in cascadeFKs)
+			fk.DeleteBehavior = DeleteBehavior.Restrict;
 
 		base.OnModelCreating(modelBuilder);
 	}
@@ -43,7 +54,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         return base.SaveChangesAsync(cancellationToken);
     }
 
-    public DbSet<Poll> Polls { get; set; }
 }
 
 

@@ -1,19 +1,10 @@
-﻿using FluentValidation;
-using FluentValidation.AspNetCore;
-using Mapster;
-using MapsterMapper;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using SurveyApp.Api.Authentication;
-using SurveyApp.Api.Persistence;
-using SurveyApp.Api.Services;
-using System.Reflection;
 using System.Text;
 
 namespace SurveyApp.Api
 {
-	public static class DependencyInjection
+    public static class DependencyInjection
 	{
 		public static IServiceCollection AddDependencies(this IServiceCollection services, 
 			IConfiguration configuration)
@@ -47,8 +38,12 @@ namespace SurveyApp.Api
 				 .AddFluentValidationConfig();
 
 
-			services.AddScoped<IPollService, PollService>();
 			services.AddScoped<IAuthService, AuthService>();
+			services.AddScoped<IPollService, PollService>();
+			services.AddScoped<IQuestionService, QuestionService>();
+
+			services.AddExceptionHandler<GlobalExceptionHandler>();
+			services.AddProblemDetails();
 
 			return services;
 		}

@@ -36,12 +36,15 @@ public class PollsController : BaseApiController
     }
 
     [HttpPost("")]
-    public async Task<IActionResult> Add([FromBody] PollRequest request,
-       CancellationToken cancellationToken)
+    public async Task<IActionResult> Add([FromBody] PollRequest request, CancellationToken cancellationToken)
     {
-        var newPoll = await _pollService.AddAsync(request, cancellationToken);
+        var result = await _pollService.AddAsync(request, cancellationToken);
 
-        return CreatedAtAction(nameof(Get), new { id = newPoll.Id }, newPoll);
+        return result.IsSuccess
+          ? CreatedAtAction(nameof(Get), new { id = result.Value.Id }, result.Value)
+          : result.ToProblem(StatusCodes.Status409Conflict); 
+
+
     }
 
     [HttpPut("{id}")]
@@ -60,9 +63,12 @@ public class PollsController : BaseApiController
     {
         var result = await _pollService.DeleteAsync(id, cancellationToken);
 
-        return result.IsSuccess 
-            ? NoContent() 
-            : result.ToProblem(StatusCodes.Status404NotFound);
+        if(result.IsSuccess)    
+            return NoContent();
+
+        return result.Error.Equals(PollErrors.DuplicatedPollTitle)
+                ? result.ToProblem(StatusCodes.Status409Conflict)
+                : result.ToProblem(StatusCodes.Status404NotFound);
     }
 
     [HttpPut("{id}/togglePublish")]
